@@ -35,9 +35,9 @@ class DefaultFeeCalculator implements FeeCalculator
     
             $this->validateLoanProposal($application, $breakpointsSet);
     
-            $this->sortAscByLoan($breakpointsSet);
+            $this->sortAscByAmount($breakpointsSet);
     
-            $breakpoints = $this->getBreakpointsToCalculateFee($breakpointsSet, $application);
+            $breakpoints = $this->breakpointsLoan->getBreakpointsToCalculateFee($breakpointsSet, $application->amount());
             $minBreakpoint = $breakpoints[0];
             $maxBreakpoint = $breakpoints[1];
     
@@ -69,8 +69,6 @@ class DefaultFeeCalculator implements FeeCalculator
         }
     }
 
-
-
     private function validateLoanProposal(LoanProposal $application, array $breakpointsSet): void
     {
         if (!count($breakpointsSet)) {
@@ -78,21 +76,17 @@ class DefaultFeeCalculator implements FeeCalculator
             throw new BadLoanTerm();
         }
 
-        $min = array_reduce($breakpointsSet, function ( $A,  $B) {
+        $min = array_reduce($breakpointsSet, function (LoanFeeBreakpoint $A,LoanFeeBreakpoint $B) {
             return $A->amount() < $B->amount() ? $A : $B;
         }, $breakpointsSet[0]);
 
-        $max = array_reduce($breakpointsSet, function ( $A,  $B) {
+        $max = array_reduce($breakpointsSet, function (LoanFeeBreakpoint $A,LoanFeeBreakpoint $B) {
             return $A->amount() > $B->amount() ? $A : $B;
         }, $breakpointsSet[0]);
 
         if ($application->amount() < $min->amount() || $application->amount() > $max->amount()) {
             throw new BadLoanAmount($min->amount(), $max->amount());
         }
-    }
-    private function comparator(LoanFeeBreakpoint $a, LoanFeeBreakpoint $b): bool 
-    {
-        return  $a->amount() > $b->amount();
     }
     
     private function roundUpToNearestFive(float $amount, float $fee): float 
@@ -101,33 +95,20 @@ class DefaultFeeCalculator implements FeeCalculator
         $value = ceil($total / 5) * 5 - $amount;
         return (float)number_format((float)$value, 2, '.', '');
     }
-
+    
     private function calculateFeeValue($amount, $minVal, $maxVal, $minFee, $maxFee): float
     {
         $d = ($amount - $minVal) / ($maxVal - $minVal);
         return $minFee * (1 - $d) + $maxFee * $d;
     }
-
-    private function sortAscByLoan(array &$breakpoints)
+    
+    private function comparator(LoanFeeBreakpoint $a, LoanFeeBreakpoint $b): bool 
+    {
+        return  $a->amount() > $b->amount();
+    }
+    private function sortAscByAmount(array &$breakpoints)
     {
         usort($breakpoints, array($this, "comparator"));
     }
-
-    private function getBreakpointsToCalculateFee(array $breakpointsSet, LoanProposal $application): array 
-    {
-        $lower = null;
-        $upper = null;
-
-        foreach ($breakpointsSet as $breakpoint) {
-            if ($breakpoint->amount() <= $application->amount()) {
-                $lower = $breakpoint;
-            }
-            if ($breakpoint->amount() >= $application->amount() && $upper === null) {
-                $upper = $breakpoint;
-                break;
-            }
-        }
-
-        return [$lower, $upper];
-    }
+    
 }

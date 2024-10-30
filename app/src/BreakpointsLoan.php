@@ -14,6 +14,7 @@ class BreakpointsLoan
     public function __construct(BreakpointsRepository $breakpointsRepository) {
         $this->breakpointsRepository = $breakpointsRepository;
     }
+
     /**
      * @return array<LoanFeeBreakpoint> The calculated total fee.
      */
@@ -26,5 +27,26 @@ class BreakpointsLoan
             $result[] = $model;
         }
         return $result;
+    }
+
+    /**
+     * @param array<LoanFeeBreakpoint> $breakpointsSet.
+     */
+    public function getBreakpointsToCalculateFee(array $breakpointsSet, float $amount): array 
+    {
+        $lower = null;
+        $upper = null;
+
+        foreach ($breakpointsSet as $breakpoint) {
+            if ($breakpoint->amount() <= $amount) {
+                $lower = $breakpoint;
+            }
+            if ($breakpoint->amount() >= $amount && $upper === null) {
+                $upper = $breakpoint;
+                break;
+            }
+        }
+
+        return [$lower, $upper];
     }
 }

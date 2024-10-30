@@ -5,7 +5,6 @@ use PragmaGoTech\Interview\Calculator\DefaultFeeCalculator;
 use PragmaGoTech\Interview\BreakpointsLoan;
 use PragmaGoTech\Interview\Exception\BadLoanAmount;
 use PragmaGoTech\Interview\Exception\BadLoanTerm;
-use PragmaGoTech\Interview\Exception\FeeCalculatorException;
 use PragmaGoTech\Interview\FeeCalculator;
 use PragmaGoTech\Interview\Repository\BreakpointsRepositoryInMemory;
 
@@ -39,6 +38,13 @@ final class CalculatorTest extends TestCase
         
         $application = new LoanProposal(12, 3000);
         $this->assertSame(90.0, $this->calculator->calculate($application));
+        
+        $application = new LoanProposal(24, 11500);
+        $this->assertSame(460.0, $this->calculator->calculate($application));
+        
+        $application = new LoanProposal(12, 19250);
+        $this->assertSame(385.0, $this->calculator->calculate($application));
+        
     }
 
     public function testExceptionBadTerm(): void
@@ -51,7 +57,12 @@ final class CalculatorTest extends TestCase
     
     public function testExceptionBadAmount(): void
     {
-        $application = new LoanProposal(24, 30001);
+        $application = new LoanProposal(24, 20001);
+
+        $this->expectException(BadLoanAmount::class);
+        $this->calculator->calculate($application);
+
+        $application = new LoanProposal(24, 999);
 
         $this->expectException(BadLoanAmount::class);
         $this->calculator->calculate($application);
