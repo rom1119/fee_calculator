@@ -8,7 +8,7 @@ namespace PragmaGoTech\Interview;
 interface BreakpointsRepository
 {
     /**
-     * @return float The calculated total fee.
+     * @return array The calculated total fee.
      */
     public function getBreakpoints(int $term): array;
 }

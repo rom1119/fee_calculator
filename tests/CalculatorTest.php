@@ -1,14 +1,20 @@
 <?php declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
+use PragmaGoTech\Interview\Model\LoanProposal;
+use PragmaGoTech\Interview\Calculator\DefaultFeeCalculator;
+use PragmaGoTech\Interview\BreakpointsLoan;
+use PragmaGoTech\Interview\Repository\BreakpointsRepositoryInMemory;
+
 
 final class CalculatorTest extends TestCase
 {
     public function testGreetsWithName(): void
     {
-        // $greeter = new Greeter;
+        $o = new DefaultFeeCalculator(new BreakpointsLoan(new BreakpointsRepositoryInMemory()));
 
-        // $greeting = $greeter->greet('Alice');
+        $application = new LoanProposal(24, 2500.2);
 
-        $this->assertSame('Hello, Alice!', 'asdas');
+
+        $this->assertSame(115.0, $o->calculate($application));
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PragmaGoTech\Interview;
 
+use PragmaGoTech\Interview\Exception\BreakpointsNotFound;
+use PragmaGoTech\Interview\Model\LoanFeeBreakpoint;
 
 class BreakpointsLoan
 {
@@ -13,10 +15,17 @@ class BreakpointsLoan
         $this->breakpointsRepository = $breakpointsRepository;
     }
     /**
-     * @return float The calculated total fee.
+     * @throws BreakpointsNotFound
+     * @return array<LoanFeeBreakpoint> The calculated total fee.
      */
     public function getBreakPointsSet(int $term): array
     {
-        return $this->breakpointsRepository->getBreakpoints($term);
+        $data = $this->breakpointsRepository->getBreakpoints($term);
+        $result = [];
+        foreach ($data as $item) {
+            $model = new LoanFeeBreakpoint($item['fee'], $item['amount']);
+            $result[] = $model;
+        }
+        return $result;
     }
 }

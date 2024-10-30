@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PragmaGoTech\Interview\Repository;
 
 use PragmaGoTech\Interview\BreakpointsRepository;
+use PragmaGoTech\Interview\Exception\BreakpointsNotFound;
 
 class BreakpointsRepositoryInMemory implements BreakpointsRepository
 {
@@ -63,6 +64,8 @@ class BreakpointsRepositoryInMemory implements BreakpointsRepository
             return self::TERM_24;
         }
 
-        return [];
+        throw new BreakpointsNotFound($term);
+        
     }
+    
 }

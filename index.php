@@ -10,9 +10,12 @@ use PragmaGoTech\Interview\BreakpointsLoan;
 use PragmaGoTech\Interview\Repository\BreakpointsRepositoryInMemory;
 
 // echo __DIR__ . '/vendor/autoload.php9999999999999';
+print ("\n");
 $o = new DefaultFeeCalculator(new BreakpointsLoan(new BreakpointsRepositoryInMemory()));
 
 
-$application = new LoanProposal(24, 2750);
+$application = new LoanProposal(24, 2500.1);
 
-$o->calculate($application);
+$fee = $o->calculate($application);
+
+print ('$fee=' . $fee);

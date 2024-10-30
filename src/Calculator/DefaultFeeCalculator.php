@@ -9,8 +9,8 @@ use PragmaGoTech\Interview\Exception\BadLoanTerm;
 use PragmaGoTech\Interview\Exception\BadLoanAmount;
 use PragmaGoTech\Interview\FeeCalculator;
 use PragmaGoTech\Interview\BreakpointsLoan;
-
-
+use PragmaGoTech\Interview\Exception\BreakpointsNotFound;
+use PragmaGoTech\Interview\Exception\FeeCalculatorException;
 
 class DefaultFeeCalculator implements FeeCalculator
 {
@@ -21,12 +21,16 @@ class DefaultFeeCalculator implements FeeCalculator
         $this->breakpointsLoan = $breakpointsLoan;
     }
     /**
+     * @throws FeeCalculatorException
      * @return float The calculated total fee.
      */
     public function calculate(LoanProposal $application): float
     {
-        // die(1231);
-        if ($application->term() < 12 || $application->term() > 24) {
+        try {
+            $breakpointsSet = $this->breakpointsLoan->getBreakPointsSet($application->term());
+
+        } catch (BreakpointsNotFound $e) {
+
             throw new BadLoanTerm();
         }
         
@@ -34,30 +38,42 @@ class DefaultFeeCalculator implements FeeCalculator
             throw new BadLoanAmount();
         }
 
-        $breakpointsSet = $this->breakpointsLoan->getBreakPointsSet($application->term());
-        ksort($breakpointsSet);
-        $breakpoints = [];
-        foreach($breakpointsSet as $i => $breakpoint) {
-            if ($breakpoint['amount'] >= $application->amount()) {
-
-                $breakpoints = [$breakpointsSet[$i - 1], $breakpoint];
-                break;
-            }
-        }
-        $minBreakpoint = $breakpointsSet[0];
-        $maxBreakpoint = $breakpointsSet[1];
+        $breakpoints = $this->getBreakpointsToCalculateFee($breakpointsSet, $application);
+        $minBreakpoint = $breakpoints[0];
+        $maxBreakpoint = $breakpoints[1];
+        // var_dump($minBreakpoint);
+        // var_dump($maxBreakpoint);
         $calcFee = $this->calculateFeeValue(
             $application->amount(),
-            $minBreakpoint['amount'],
-            $maxBreakpoint['amount'],
-            $minBreakpoint['fee'],
-            $maxBreakpoint['fee'],
+            $minBreakpoint->amount(),
+            $maxBreakpoint->amount(),
+            $minBreakpoint->fee(),
+            $maxBreakpoint->fee(),
         );
+
 
 
         return $this->roundUpToNearestFive($application->amount(), $calcFee);
     }
 
+    private function getBreakpointsToCalculateFee(array $breakpointsSet, LoanProposal $application): array 
+    {
+        $lower = null;
+        $upper = null;
+
+        foreach ($breakpointsSet as $breakpoint) {
+            if ($breakpoint->amount() <= $application->amount()) {
+                $lower = $breakpoint;
+            }
+            if ($breakpoint->amount() >= $application->amount() && $upper === null) {
+                $upper = $breakpoint;
+                break;
+            }
+        }
+
+        return [$lower, $upper];
+        
+    }
     private function roundUpToNearestFive(float $amount, float $fee): float 
     {
         $total = $amount + $fee;
