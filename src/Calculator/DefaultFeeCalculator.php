@@ -9,8 +9,7 @@ use PragmaGoTech\Interview\Exception\BadLoanTerm;
 use PragmaGoTech\Interview\Exception\BadLoanAmount;
 use PragmaGoTech\Interview\FeeCalculator;
 use PragmaGoTech\Interview\BreakpointsLoan;
-use PragmaGoTech\Interview\Exception\BreakpointsNotFound;
-use PragmaGoTech\Interview\Exception\FeeCalculatorError;
+use PragmaGoTech\Interview\Exception\GeneralFeeCalculatorError;
 use PragmaGoTech\Interview\Exception\FeeCalculatorException;
 use PragmaGoTech\Interview\Model\LoanFeeBreakpoint;
 
@@ -61,7 +60,7 @@ class DefaultFeeCalculator implements FeeCalculator
         } catch (FeeCalculatorException $e) {
             throw $e;
         } catch (\Throwable $e) {
-            throw new FeeCalculatorError('Somethink went wrong with calculator');
+            throw new GeneralFeeCalculatorError('Somethink went wrong with calculator');
         }
     }
 
@@ -94,7 +93,8 @@ class DefaultFeeCalculator implements FeeCalculator
     private function roundUpToNearestFive(float $amount, float $fee): float 
     {
         $total = $amount + $fee;
-        return (float)ceil($total / 5) * 5 - $amount;
+        $value = ceil($total / 5) * 5 - $amount;
+        return (float)number_format((float)$value, 2, '.', '');
     }
 
     private function calculateFeeValue($amount, $minVal, $maxVal, $minFee, $maxFee): float

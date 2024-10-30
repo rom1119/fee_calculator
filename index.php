@@ -15,14 +15,18 @@ print ("\n");
 $o = new DefaultFeeCalculator(new BreakpointsLoan(new BreakpointsRepositoryInMemory()));
 
 
+$application = new LoanProposal(24, 2500.2);
 // $application = new LoanProposal(24, 30000);
 // $application = new LoanProposal(12, 19250);
-$application = new LoanProposal(24, 1000);
+// $application = new LoanProposal(12, 3000);
+// $application = new LoanProposal(24, 1000);
 
 try {
 
     $fee = $o->calculate($application);
-    print ('$fee=' . $fee);
+    print ('$fee=');
+    echo ($fee);
+    var_dump($fee);
 } catch(FeeCalculatorException $e) {
     print ('ERRR=');
     print ($e->getMessage());

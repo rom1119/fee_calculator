@@ -8,13 +8,17 @@ use PragmaGoTech\Interview\Repository\BreakpointsRepositoryInMemory;
 
 final class CalculatorTest extends TestCase
 {
-    public function testGreetsWithName(): void
+    public function test(): void
     {
         $o = new DefaultFeeCalculator(new BreakpointsLoan(new BreakpointsRepositoryInMemory()));
 
-        $application = new LoanProposal(24, 2500.2);
+        $application = new LoanProposal(24, 2500.1);
+        $this->assertSame(114.9, $o->calculate($application));
 
-
-        $this->assertSame(115.0, $o->calculate($application));
+        $application = new LoanProposal(24, 2000);
+        $this->assertSame(90, $o->calculate($application));
+        
+        $application = new LoanProposal(24, 3000);
+        $this->assertSame(90, $o->calculate($application));
     }
 }
