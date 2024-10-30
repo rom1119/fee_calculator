@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  php:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+       - ./app:/app
+       - ./app/vendor:/app/vendor
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+    command: >
+      sh -c "composer install && composer dump-autoload --optimize && php -S 0.0.0.0:8000 -t public"
+
+
+
+networks:
+  app-network:
