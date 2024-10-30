@@ -15,7 +15,6 @@ class BreakpointsLoan
         $this->breakpointsRepository = $breakpointsRepository;
     }
     /**
-     * @throws BreakpointsNotFound
      * @return array<LoanFeeBreakpoint> The calculated total fee.
      */
     public function getBreakPointsSet(int $term): array

@@ -7,6 +7,7 @@ require_once __DIR__.'/vendor/autoload.php';
 use PragmaGoTech\Interview\Model\LoanProposal;
 use PragmaGoTech\Interview\Calculator\DefaultFeeCalculator;
 use PragmaGoTech\Interview\BreakpointsLoan;
+use PragmaGoTech\Interview\Exception\FeeCalculatorException;
 use PragmaGoTech\Interview\Repository\BreakpointsRepositoryInMemory;
 
 // echo __DIR__ . '/vendor/autoload.php9999999999999';
@@ -14,8 +15,15 @@ print ("\n");
 $o = new DefaultFeeCalculator(new BreakpointsLoan(new BreakpointsRepositoryInMemory()));
 
 
-$application = new LoanProposal(24, 2500.1);
+// $application = new LoanProposal(24, 30000);
+// $application = new LoanProposal(12, 19250);
+$application = new LoanProposal(24, 1000);
 
-$fee = $o->calculate($application);
+try {
 
-print ('$fee=' . $fee);
+    $fee = $o->calculate($application);
+    print ('$fee=' . $fee);
+} catch(FeeCalculatorException $e) {
+    print ('ERRR=');
+    print ($e->getMessage());
+}

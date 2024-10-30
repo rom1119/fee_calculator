@@ -64,7 +64,7 @@ class BreakpointsRepositoryInMemory implements BreakpointsRepository
             return self::TERM_24;
         }
 
-        throw new BreakpointsNotFound($term);
+        return [];
         
     }
     
