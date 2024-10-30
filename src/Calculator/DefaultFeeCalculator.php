@@ -9,6 +9,7 @@ use PragmaGoTech\Interview\Exception\BadLoanTerm;
 use PragmaGoTech\Interview\Exception\BadLoanAmount;
 use PragmaGoTech\Interview\FeeCalculator;
 use PragmaGoTech\Interview\BreakpointsLoan;
+use PragmaGoTech\Interview\CalculatorLogger;
 use PragmaGoTech\Interview\Exception\GeneralFeeCalculatorError;
 use PragmaGoTech\Interview\Exception\FeeCalculatorException;
 use PragmaGoTech\Interview\Model\LoanFeeBreakpoint;
@@ -17,9 +18,11 @@ class DefaultFeeCalculator implements FeeCalculator
 {
 
     private BreakpointsLoan $breakpointsLoan;
+    private CalculatorLogger $logger;
 
     public function __construct(BreakpointsLoan $breakpointsLoan) {
         $this->breakpointsLoan = $breakpointsLoan;
+        $this->logger = new CalculatorLogger();
     }
     /**
      * @throws FeeCalculatorException
@@ -37,8 +40,6 @@ class DefaultFeeCalculator implements FeeCalculator
             $breakpoints = $this->getBreakpointsToCalculateFee($breakpointsSet, $application);
             $minBreakpoint = $breakpoints[0];
             $maxBreakpoint = $breakpoints[1];
-            // var_dump($minBreakpoint);
-            // var_dump($maxBreakpoint);
     
             if ($minBreakpoint->amount() == $maxBreakpoint->amount()) {
                 return (float)$minBreakpoint->fee();
@@ -51,15 +52,19 @@ class DefaultFeeCalculator implements FeeCalculator
                 $minBreakpoint->fee(),
                 $maxBreakpoint->fee(),
             );
-            
-            var_dump($calcFee);
-            
-            // die;
+                        
             return $this->roundUpToNearestFive($application->amount(), $calcFee);
             
         } catch (FeeCalculatorException $e) {
             throw $e;
         } catch (\Throwable $e) {
+            $this->logger->logError($e->getMessage(),
+        [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'stackTrace' => $e->getTraceAsString(),
+                'application' => $application,
+            ]);
             throw new GeneralFeeCalculatorError('Somethink went wrong with calculator');
         }
     }

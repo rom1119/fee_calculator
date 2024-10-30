@@ -15,18 +15,11 @@ class LoanFeeBreakpoint
         $this->amount = $amount;
     }
 
-    /**
-     * Term (loan duration) for this loan application
-     * in number of months.
-     */
     public function fee(): float
     {
         return $this->fee;
     }
 
-    /**
-     * Amount requested for this loan application.
-     */
     public function amount(): float
     {
         return $this->amount;

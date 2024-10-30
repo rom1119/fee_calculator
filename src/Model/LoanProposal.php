@@ -36,4 +36,8 @@ class LoanProposal
     {
         return $this->amount;
     }
+
+    public function __tostring() {
+        return 'LoanProposal(amount=' . $this->amount() . ',term=' . $this->term() . ')';
+    }
 }
