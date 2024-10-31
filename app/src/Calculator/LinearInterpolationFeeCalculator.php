@@ -14,7 +14,7 @@ use PragmaGoTech\Interview\Exception\GeneralFeeCalculatorError;
 use PragmaGoTech\Interview\Exception\FeeCalculatorException;
 use PragmaGoTech\Interview\Model\LoanFeeBreakpoint;
 
-class DefaultFeeCalculator implements FeeCalculator
+class LinearInterpolationFeeCalculator implements FeeCalculator
 {
 
     private BreakpointsLoan $breakpointsLoan;

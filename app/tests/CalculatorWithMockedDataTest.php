@@ -9,12 +9,19 @@ use PragmaGoTech\Interview\FeeCalculator;
 use PragmaGoTech\Interview\Repository\BreakpointsRepositoryInMemory;
 
 
-final class CalculatorTest extends TestCase
+final class CalculatorWithMockedDataTest extends TestCase
 {
     private ?FeeCalculator $calculator;
 
     protected function setUp(): void
     {
+        $mockRepo = $this->createConfiguredMock(
+            BreakPoint::class,
+            [
+                'doSomething'     => 'foo',
+                'doSomethingElse' => 'bar',
+            ],
+        );
         $this->calculator = new LinearInterpolationFeeCalculator(
             new BreakpointsLoan(
                 new BreakpointsRepositoryInMemory()

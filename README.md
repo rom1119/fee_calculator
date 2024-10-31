@@ -15,3 +15,11 @@ docker-compose 1.29.2
 
 2. finnally go to [localhost:8000](http://localhost:8000/?term=24&amount=5500) in your browser
 params term and  amount can be changed 
+
+
+3. running tests
+- first go to docker container and type in commands
+  ```
+  cd /app
+  ./vendor/bin/phpunit tests/CalculatorTest.php
+  ```
